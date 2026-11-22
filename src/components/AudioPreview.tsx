@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Disc3, Radio, Sparkles, Music2, Sliders } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Disc3, Radio, Sparkles, Sliders, ExternalLink, Instagram } from 'lucide-react';
 
 interface Track {
   id: string;
@@ -10,6 +10,7 @@ interface Track {
   description: string;
   highlights: string[];
   color: string;
+  audioUrl: string;
 }
 
 const TRACKS: Track[] = [
@@ -18,40 +19,44 @@ const TRACKS: Track[] = [
     title: 'Thunder Ignition (Rock Experience)',
     genre: 'Rock',
     tempo: 130,
-    duration: '03:45',
+    duration: '00:12',
     description: 'Riffs marcantes de guitarra, bateria explosiva e vocais enérgicos que eletrizam qualquer festival ou pista de evento.',
     highlights: ['Solo Virtuoso', 'Pegada Clássica & Moderna', 'Clímax Contagiante'],
     color: 'from-cyan-500 to-blue-600',
+    audioUrl: '/audio/rock-storm.wav',
   },
   {
     id: 'jazz-lounge',
     title: 'Midnight Velvet (Jazz & Soul Mood)',
     genre: 'Jazz',
-    tempo: 84,
-    duration: '04:15',
-    description: 'Ambiente sofisticado e intimista. Acordes ricos no violão e guitarra semi-acústica, criando o clima perfeito para coquetéis e jantares de gala.',
+    tempo: 88,
+    duration: '00:12',
+    description: 'Ambiente sofisticado e intimista. Acordes ricos na semi-acústica e walking bass, criando o clima perfeito para coquetéis e jantares de gala.',
     highlights: ['Harmonias Nobres', 'Sax & Guitar Dialogue', 'Elegância Pura'],
     color: 'from-amber-400 to-yellow-600',
+    audioUrl: '/audio/jazz-lounge.wav',
   },
   {
     id: 'delta-blues',
     title: 'Delta Storm (Electric Blues Shuffle)',
     genre: 'Blues',
     tempo: 96,
-    duration: '03:50',
-    description: 'A verdadeira alma do blues do Mississippi reinventada com a eletricidade de Matheus Storm: bends viscerais e groove compassado.',
+    duration: '00:12',
+    description: 'A verdadeira alma do blues do Mississippi com a eletricidade de Matheus Storm: bends viscerais e groove compassado.',
     highlights: ['Bends Viscerais', 'Shuffle Arrastado', 'Improviso Autêntico'],
     color: 'from-purple-500 to-pink-600',
+    audioUrl: '/audio/delta-blues.wav',
   },
   {
     id: 'fusion-groove',
     title: 'Funk Riot & Brasilidades (Groove Fusion)',
     genre: 'Fusion',
-    tempo: 115,
-    duration: '04:02',
-    description: 'Mistura irresistível de funk americano anos 70, samba-rock e pop internacional com metais e linhas de contrabaixo suingadas.',
+    tempo: 116,
+    duration: '00:12',
+    description: 'Mistura irresistível de funk anos 70, samba-rock e pop com slap bass e metais dançantes que contagiam o público.',
     highlights: ['Slap Bass Envolvente', 'Metais Quentes', 'Pista em Chamas'],
     color: 'from-emerald-400 to-teal-600',
+    audioUrl: '/audio/fusion-groove.wav',
   },
 ];
 
@@ -59,99 +64,105 @@ export const AudioPreview: React.FC = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [progress, setProgress] = useState(25);
-  
-  // Audio synthesis engine using Web Audio API for interactive listening experience
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const oscillatorLoopRef = useRef<number | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [currentTimeFormatted, setCurrentTimeFormatted] = useState('00:00');
+  const [audioError, setAudioError] = useState<string | null>(null);
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentTrack = TRACKS[currentTrackIndex];
 
-  // Synthesize musical tones dynamically based on current track genre
-  const startAudioTone = () => {
-    try {
-      if (!audioContextRef.current) {
-        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        audioContextRef.current = new AudioCtx();
-      }
-
-      if (audioContextRef.current.state === 'suspended') {
-        audioContextRef.current.resume();
-      }
-
-      const ctx = audioContextRef.current;
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = isMuted ? 0 : 0.08;
-      gainNode.connect(ctx.destination);
-
-      // Notes based on track genre
-      const chordMap: Record<string, number[]> = {
-        Rock: [110, 164.81, 220, 329.63], // A minor power chord
-        Jazz: [130.81, 164.81, 196.00, 246.94, 293.66], // Cmaj9 chord
-        Blues: [146.83, 174.61, 220.00, 261.63], // Dm7 blues
-        Fusion: [164.81, 196.00, 246.94, 329.63], // E minor funk groove
-      };
-
-      const notes = chordMap[currentTrack.genre] || [220, 277.18, 329.63];
-      
-      notes.forEach((freq, index) => {
-        const osc = ctx.createOscillator();
-        osc.type = currentTrack.genre === 'Rock' ? 'sawtooth' : currentTrack.genre === 'Jazz' ? 'sine' : 'triangle';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        
-        // Add subtle vibrato / groove
-        const lfo = ctx.createOscillator();
-        lfo.frequency.value = 2.5 + index * 0.5;
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 3;
-        lfo.connect(osc.frequency);
-        lfo.start();
-
-        const noteGain = ctx.createGain();
-        noteGain.gain.setValueAtTime(0.015, ctx.currentTime);
-        noteGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.8);
-
-        osc.connect(noteGain);
-        noteGain.connect(gainNode);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 4);
-      });
-    } catch {
-      // AudioContext fallback
-    }
-  };
-
+  // Sync mute with audio element
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      startAudioTone();
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            // Next track
-            setCurrentTrackIndex((curr) => (curr + 1) % TRACKS.length);
-            return 0;
-          }
-          return prev + 1.2;
-        });
-      }, 500);
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+      audioRef.current.volume = isMuted ? 0 : 0.9;
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTrackIndex, isMuted]);
+  }, [isMuted]);
 
+  // Handle Play / Pause directly from user interaction
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    setAudioError(null);
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.error('Audio playback error:', err);
+          // If browser blocked or media couldn't start, try reload and play
+          if (audioRef.current) {
+            audioRef.current.load();
+            audioRef.current.play()
+              .then(() => setIsPlaying(true))
+              .catch(() => {
+                setAudioError('Clique no botão para autorizar o áudio no seu navegador.');
+              });
+          }
+        });
+    }
   };
 
+  // Change Track
   const selectTrack = (index: number) => {
+    setAudioError(null);
     setCurrentTrackIndex(index);
     setProgress(0);
-    setIsPlaying(true);
+    setCurrentTimeFormatted('00:00');
+
+    if (audioRef.current) {
+      audioRef.current.src = TRACKS[index].audioUrl;
+      audioRef.current.currentTime = 0;
+      audioRef.current.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.warn('Playback on change:', err);
+          setIsPlaying(false);
+        });
+    }
+  };
+
+  // Time update listener
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const current = audioRef.current.currentTime;
+    const duration = audioRef.current.duration || 12;
+    const pct = (current / duration) * 100;
+    setProgress(pct);
+
+    const mins = Math.floor(current / 60);
+    const secs = Math.floor(current % 60);
+    setCurrentTimeFormatted(
+      `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    );
+  };
+
+  const handleEnded = () => {
+    // Loop current track or advance
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(console.warn);
+    }
   };
 
   return (
     <section id="player" className="py-24 relative overflow-hidden bg-storm-950/80 border-y border-white/5">
+      {/* Native HTML5 Audio Element */}
+      <audio
+        ref={audioRef}
+        src={currentTrack.audioUrl}
+        preload="auto"
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleEnded}
+        onError={() => setAudioError('Não foi possível carregar o arquivo de áudio.')}
+      />
+
       {/* Background radial accent */}
       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-600/10 blur-[130px] rounded-full pointer-events-none" />
 
@@ -167,7 +178,7 @@ export const AudioPreview: React.FC = () => {
             O SOM DA <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">TEMPESTADE</span>
           </h2>
           <p className="text-slate-300 text-base sm:text-lg">
-            Sinta a dinâmica de Matheus Storm e a Stormprojekt. Escolha os ritmos abaixo e ouça a atmosfera que vai incendiar ou sofisticar o seu evento.
+            Sinta a dinâmica de Matheus Storm e a Stormprojekt. Clique no play abaixo para ouvir amostras reais dos ritmos que vão incendiar ou sofisticar o seu evento.
           </p>
         </div>
 
@@ -201,13 +212,13 @@ export const AudioPreview: React.FC = () => {
               {[...Array(16)].map((_, i) => (
                 <div
                   key={i}
-                  className={`w-1 rounded-full transition-all duration-200 ${
+                  className={`w-1 rounded-full transition-all duration-150 ${
                     isPlaying
                       ? 'bg-gradient-to-t from-cyan-500 to-amber-400'
                       : 'bg-slate-700 h-2'
                   }`}
                   style={{
-                    height: isPlaying ? `${Math.sin(i * 0.8 + progress * 0.2) * 50 + 45}%` : '6px',
+                    height: isPlaying ? `${Math.abs(Math.sin(i * 0.9 + progress * 0.5)) * 80 + 20}%` : '6px',
                   }}
                 />
               ))}
@@ -231,6 +242,11 @@ export const AudioPreview: React.FC = () => {
                   </span>
                 ))}
               </div>
+              {audioError && (
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+                  {audioError}
+                </div>
+              )}
             </div>
 
             {/* Control Pod */}
@@ -252,20 +268,21 @@ export const AudioPreview: React.FC = () => {
                   onClick={() => setIsMuted(!isMuted)}
                   className="p-3 rounded-full bg-white/10 hover:bg-white/15 text-slate-200 transition-colors"
                   aria-label={isMuted ? 'Desmutar' : 'Mutar'}
+                  title={isMuted ? 'Desmutar som' : 'Mutar som'}
                 >
-                  {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5 text-cyan-400" />}
+                  {isMuted ? <VolumeX className="w-5 h-5 text-rose-400" /> : <Volume2 className="w-5 h-5 text-cyan-400" />}
                 </button>
               </div>
 
               {/* Progress Bar */}
               <div className="w-full">
                 <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
-                  <span>01:{Math.floor(progress * 0.6).toString().padStart(2, '0')}</span>
+                  <span>{currentTimeFormatted}</span>
                   <span>{currentTrack.duration}</span>
                 </div>
                 <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-amber-400 transition-all duration-300 rounded-full"
+                    className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-amber-400 transition-all duration-150 rounded-full"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -277,7 +294,7 @@ export const AudioPreview: React.FC = () => {
           <div className="pt-6 border-t border-white/10">
             <div className="text-xs font-accent uppercase text-slate-400 tracking-wider mb-4 flex items-center gap-2">
               <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-              Selecione o Estilo de Repertório:
+              Selecione o Estilo de Repertório para Ouvir:
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {TRACKS.map((t, idx) => {
@@ -313,6 +330,23 @@ export const AudioPreview: React.FC = () => {
                 );
               })}
             </div>
+          </div>
+
+          {/* Instagram Notice for more live audio */}
+          <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+            <span>
+              ⚡ Gravação de demonstração em estúdio • Quer ouvir Matheus Storm ao vivo nos palcos?
+            </span>
+            <a
+              href="https://www.instagram.com/stormprojekt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-pink-400 hover:text-pink-300 font-semibold"
+            >
+              <Instagram className="w-3.5 h-3.5" />
+              <span>Ver vídeos ao vivo no Instagram @stormprojekt</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
           </div>
 
         </div>
