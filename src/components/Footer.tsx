@@ -30,7 +30,7 @@ export const Footer: React.FC = () => {
               </div>
               <div>
                 <span className="font-display font-black text-xl text-white tracking-tight flex items-center gap-1.5">
-                  MATHEUS STORM
+                  STORM <span className="text-cyan-400">PROJEKT</span>
                   <Zap className="w-4 h-4 text-cyan-400 fill-cyan-400" />
                 </span>
                 <span className="text-xs uppercase font-accent font-semibold tracking-wider text-cyan-400">
