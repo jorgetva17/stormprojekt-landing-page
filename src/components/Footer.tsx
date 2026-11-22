@@ -128,7 +128,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            © {new Date().getFullYear()} Matheus Storm & Stormprojekt. Todos os direitos reservados.
+            © {new Date().getFullYear()} Jorge Torres Consultoria. Todos os direitos reservados.
           </div>
 
           <div className="flex items-center gap-4">
