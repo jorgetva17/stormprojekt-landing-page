@@ -7,7 +7,7 @@ export const FloatingWhatsApp: React.FC = () => {
   const openWhatsApp = (customMessage?: string) => {
     const msg = customMessage || 'Olá Matheus Storm / Produção Stormprojekt! Gostaria de saber mais sobre a disponibilidade de datas e orçamentos para shows.';
     const encoded = encodeURIComponent(msg);
-    window.open(`https://api.whatsapp.com/send?phone=5511999999999&text=${encoded}`, '_blank');
+    window.open(`https://api.whatsapp.com/send?phone=5585991307959&text=${encoded}`, '_blank');
   };
 
   return (
@@ -31,9 +31,12 @@ export const FloatingWhatsApp: React.FC = () => {
             </button>
           </div>
 
-          <p className="text-xs text-slate-300 leading-relaxed mb-3">
+          <p className="text-xs text-slate-300 leading-relaxed mb-2">
             Olá! Quer consultar uma data ou tirar dúvidas diretamente com o produtor de Matheus Storm?
           </p>
+          <div className="text-[11px] font-mono text-emerald-400 font-bold mb-3 flex items-center gap-1.5">
+            <span>📱 WhatsApp Oficial: +55 85 99130-7959</span>
+          </div>
 
           <button
             onClick={() => openWhatsApp()}

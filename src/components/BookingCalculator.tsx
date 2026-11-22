@@ -69,8 +69,8 @@ export const BookingCalculator: React.FC = () => {
       `\nEnviado através da Landing Page Oficial Matheus Storm (@stormprojekt).`;
 
     const encoded = encodeURIComponent(text);
-    // Open WhatsApp URL (using standard Brazilian direct link or generic production phone)
-    window.open(`https://api.whatsapp.com/send?phone=5511999999999&text=${encoded}`, '_blank');
+    // Open WhatsApp URL directly with official production phone +55 85 99130-7959
+    window.open(`https://api.whatsapp.com/send?phone=5585991307959&text=${encoded}`, '_blank');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -294,7 +294,7 @@ export const BookingCalculator: React.FC = () => {
                     <input
                       type="tel"
                       required
-                      placeholder="Ex: (11) 98765-4321"
+                      placeholder="Ex: (85) 99130-7959"
                       value={formData.clientPhone}
                       onChange={(e) => handleInputChange('clientPhone', e.target.value)}
                       className="w-full p-3 rounded-xl bg-storm-900 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"

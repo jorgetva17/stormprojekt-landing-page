@@ -248,7 +248,7 @@ export const QAMural: React.FC = () => {
                     <span className="text-xs text-slate-400 block mb-1">WhatsApp ou E-mail (Opcional, para resposta direta)</span>
                     <input
                       type="text"
-                      placeholder="Ex: (11) 99999-9999 ou email@exemplo.com"
+                      placeholder="Ex: (85) 99130-7959 ou email@exemplo.com"
                       value={userContact}
                       onChange={(e) => setUserContact(e.target.value)}
                       className="w-full p-2.5 rounded-xl bg-storm-950 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-400"

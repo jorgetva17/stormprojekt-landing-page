@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Instagram, Menu, X, Calendar, Music, Sparkles, ChevronRight, Zap } from 'lucide-react';
+import { Instagram, Menu, X, Calendar, Music, Sparkles, ChevronRight, Zap, Phone } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -79,13 +79,25 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Action Buttons */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
+            {/* WhatsApp Direct Phone */}
+            <a
+              href="https://api.whatsapp.com/send?phone=5585991307959&text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20shows%20de%20Matheus%20Storm%20e%20Stormprojekt."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden xl:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 transition-all shadow-sm"
+              title="Contato para Shows: +55 85 99130-7959"
+            >
+              <Phone className="w-3.5 h-3.5 text-emerald-400" />
+              <span>(85) 99130-7959</span>
+            </a>
+
             {/* Instagram Link */}
             <a
               href="https://www.instagram.com/stormprojekt"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 hover:border-pink-500/50 hover:bg-gradient-to-r hover:from-purple-900/40 hover:to-pink-900/40 text-slate-200 hover:text-white transition-all duration-300 shadow-sm"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 hover:border-pink-500/50 hover:bg-gradient-to-r hover:from-purple-900/40 hover:to-pink-900/40 text-slate-200 hover:text-white transition-all duration-300 shadow-sm"
               title="Acesse o Instagram oficial @stormprojekt"
             >
               <Instagram className="w-4 h-4 text-pink-400" />
@@ -132,6 +144,16 @@ export const Navbar: React.FC = () => {
             ))}
 
             <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
+              <a
+                href="https://api.whatsapp.com/send?phone=5585991307959&text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20shows%20de%20Matheus%20Storm%20e%20Stormprojekt."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300"
+              >
+                <Phone className="w-4 h-4 text-emerald-400" />
+                <span>WhatsApp Shows: +55 85 99130-7959</span>
+              </a>
+
               <a
                 href="https://www.instagram.com/stormprojekt"
                 target="_blank"

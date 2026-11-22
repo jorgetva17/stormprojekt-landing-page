@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, Zap, Heart, Calendar, ArrowUp, Mail, ShieldCheck } from 'lucide-react';
+import { Instagram, Zap, Heart, Calendar, ArrowUp, Phone, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -94,7 +94,16 @@ export const Footer: React.FC = () => {
             <p className="text-xs text-slate-400 leading-relaxed">
               Disponibilidade para casamentos, formaturas, festivais, eventos corporativos e casas noturnas em todo o Brasil.
             </p>
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2 text-xs">
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2.5 text-xs">
+              <a
+                href="https://api.whatsapp.com/send?phone=5585991307959&text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20shows%20de%20Matheus%20Storm%20e%20Stormprojekt."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>+55 85 99130-7959</span>
+              </a>
               <div className="flex items-center gap-2 text-slate-300">
                 <Calendar className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Agenda 2026/2027 com datas abertas</span>
